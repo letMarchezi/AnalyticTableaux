@@ -48,7 +48,7 @@ defmodule Rules do
     end
   end
 
- # branching rules
+  # branching rules
   defp expandBranch(%Clauses{formula: terms, sign: _s}) do  
     case terms do 
       {:and, first, second}     -> 
@@ -66,10 +66,25 @@ defmodule Rules do
     end 
   end 
  
-  def expand(clause) do 
+  defp expand(clause) do 
     case branching?(clause) do 
       true  -> expandBranch(clause)
       false -> expandLinear(clause)
     end
   end
+  
+  def addExpand(current, %Tree{value: v, right: nil, left: l}) when is_nil(l) do
+    
+    [ head | tail ] = expand(current.value)
+    IO.inspect(head, label: "cabeca")
+    IO.inspect(tail, label: "corpo")
+    cond do
+      Rules.branching?(current.value) -> %Tree{value: v, right: head, left: hd(tail)}
+      true ->  %Tree{value: v, right: nil, left: head}
+      end
+  end 
+
+  def addExpand(clause, %Tree{value: v, right: r, left: l}), do: 
+    %Tree{value: v, right: r, left: addExpand(clause, l)}
+
 end

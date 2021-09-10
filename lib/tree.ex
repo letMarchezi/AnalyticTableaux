@@ -1,46 +1,48 @@
 defmodule Tree do
-  defstruct [:value, left: nil, right: nil]
+  defstruct [value: nil, left: nil, right: nil]
   
-  def formulaToTree([head | []]) do 
-    %Tree{value: head, right: nil, left: nil}
-  end
-  def formulaToTree([head | tail]) do 
+  def formulaToTree([head | []]), do: %Tree{value: head, right: nil, left: nil}
+  def formulaToTree([head | tail]), do: 
     %Tree{value: head, right: nil, left: formulaToTree(tail)}
-  end  
 
   # should return the result [:result => valid/invalid, %Tree{}=> answer]
   def solvingTree(tree), do: solvingTree(tree, tree, %Tree{}) 
+   newResult = treeResult(solution, %Tree{value: current.value, left: nil, right: nil})
+     
+
   def solvingTree(current, tree, solution) do
-   
-    newResult = updateResult(solution, %Tree{value: current.value, left: nil, right: nil})
+    # adds the current formula to the resolution tree
+    newResult = treeResult(solution, %Tree{value: current.value, left: nil, right: nil})
     IO.inspect(current, label: "Atual")
     IO.inspect(tree, label: "Arvore")
     IO.inspect(newResult, label: "Novo resultado:")
     IO.puts("")
-    IO.puts("")
-     
+    IO.puts("") 
     cond do 
-      closed?(current, tree) ->  [:valid, newResult]
-    
-      Rules.hasOperator?(current.value) -> solvingTree(addExpand(current, solution), tree, newResult)  
-
+      closed?(current, newResult) ->  [:valid, newResult]
+      Rules.hasOperator?(current.value) -> solvingTree(current.left, tree, Rules.addExpand(current, solution))   
       leaf?(current) -> [:invalid, solution]
-      
       true ->  solvingTree(current.left, tree, newResult)
     end
   end
   
+
   def leaf?(tree) when is_atom(tree.value.formula), do: true
   def leaf?(%Tree{value: _, left: nil, right: nil}), do: true
   def leaf?(_), do: false
 
-  # it looks for any contradiction in the tree
-  def closed?(_, nil), do: false
-  def closed?(current, tree) do
+  ## it looks for any contradiction in the tree
+  
+  # base case: 
+   def closed?(current, %Tree{value: v, left: nil, right: _}), do: contradiction?(current.value, v)
+   def closed?(current, tree) do
+    IO.puts("errou dentro do closed...")
     if contradiction?(current, tree) do 
       true
     else 
-      closed?(current, tree.left)
+      IO.inspect(current)
+      IO.inspect(tree.left)   
+     closed?(current, tree.left)
     end
   end
 
@@ -51,34 +53,20 @@ defmodule Tree do
   def contradiction?(_,_), do: false  
 
 
-  # update the first result
-  def updateResult(%Tree{value: nil, right: nil, left: nil} = tree, newResult) do 
+  # it updates the first result
+  def treeResult(%Tree{value: nil, right: _, left: _}, newResult) do 
     #IO.inspect(tree, label: "folha")
     newResult
   end
   # reaches the leaf 
-  def updateResult(%Tree{value: v, right: _, left: nil} = tree, newResult) do 
+  def treeResult(%Tree{value: v, right: _, left: nil}, newResult) do 
     #IO.inspect(tree, label: "folha")
     %Tree{value: v, right: nil, left: newResult}
   end
   # traverse the tree
-  def updateResult(%Tree{value: v, right: r, left: l} = tree, newResult) do
+  def treeResult(%Tree{value: v, right: r, left: l}, newResult) do
     #IO.inspect(tree, label: "caule")
-    %Tree{value: v, right: r, left: updateResult(l, newResult)}
+    %Tree{value: v, right: r, left: treeResult(l, newResult)}
   end
-
-
-
-  def addExpand(current, %Tree{value: v, right: nil, left: l}) when is_nil(l) do
-   [ head | tail ] = Rules.expand(current.value)
-   if Rules.branching?(current.value) do 
-      %Tree{value: v, right: head, left: tail}
-    else
-      %Tree{value: v, right: nil, left: head}
-    end
-  end 
-
-  def addExpand(clause, %Tree{value: v, right: r, left: l}), do: 
-  %Tree{value: v, right: r, left: addExpand(clause, l)}
 
 end
