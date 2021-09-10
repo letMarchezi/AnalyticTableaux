@@ -76,8 +76,6 @@ defmodule Rules do
   def addExpand(current, %Tree{value: v, right: nil, left: l}) when is_nil(l) do
     
     [ head | tail ] = expand(current.value)
-    IO.inspect(head, label: "cabeca")
-    IO.inspect(tail, label: "corpo")
     cond do
       Rules.branching?(current.value) -> %Tree{value: v, right: head, left: hd(tail)}
       true ->  %Tree{value: v, right: nil, left: head}

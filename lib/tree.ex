@@ -7,17 +7,10 @@ defmodule Tree do
 
   # should return the result [:result => valid/invalid, %Tree{}=> answer]
   def solvingTree(tree), do: solvingTree(tree, tree, %Tree{}) 
-   newResult = treeResult(solution, %Tree{value: current.value, left: nil, right: nil})
-     
 
   def solvingTree(current, tree, solution) do
     # adds the current formula to the resolution tree
     newResult = treeResult(solution, %Tree{value: current.value, left: nil, right: nil})
-    IO.inspect(current, label: "Atual")
-    IO.inspect(tree, label: "Arvore")
-    IO.inspect(newResult, label: "Novo resultado:")
-    IO.puts("")
-    IO.puts("") 
     cond do 
       closed?(current, newResult) ->  [:valid, newResult]
       Rules.hasOperator?(current.value) -> solvingTree(current.left, tree, Rules.addExpand(current, solution))   
@@ -36,12 +29,9 @@ defmodule Tree do
   # base case: 
    def closed?(current, %Tree{value: v, left: nil, right: _}), do: contradiction?(current.value, v)
    def closed?(current, tree) do
-    IO.puts("errou dentro do closed...")
     if contradiction?(current, tree) do 
       true
     else 
-      IO.inspect(current)
-      IO.inspect(tree.left)   
      closed?(current, tree.left)
     end
   end
@@ -55,17 +45,14 @@ defmodule Tree do
 
   # it updates the first result
   def treeResult(%Tree{value: nil, right: _, left: _}, newResult) do 
-    #IO.inspect(tree, label: "folha")
     newResult
   end
   # reaches the leaf 
   def treeResult(%Tree{value: v, right: _, left: nil}, newResult) do 
-    #IO.inspect(tree, label: "folha")
     %Tree{value: v, right: nil, left: newResult}
   end
   # traverse the tree
   def treeResult(%Tree{value: v, right: r, left: l}, newResult) do
-    #IO.inspect(tree, label: "caule")
     %Tree{value: v, right: r, left: treeResult(l, newResult)}
   end
 
