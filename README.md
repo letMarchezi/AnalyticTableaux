@@ -1,5 +1,6 @@
 # AnalyticTableaux
 Proof procedure for propositional logic
+
 ## Clauses
 parse_formula/1 receives a string and parse the formula into a tree
 ```elixir
@@ -73,3 +74,4 @@ Tree.addExpand(cl.value,cl)
     value: %Clauses{formula: {:and, :a, :b}, sign: T}
   }
 ```
+# Currently the proof method is not working ): this project is not complete.
