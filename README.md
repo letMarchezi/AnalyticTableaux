@@ -74,4 +74,4 @@ Tree.addExpand(cl.value,cl)
     value: %Clauses{formula: {:and, :a, :b}, sign: T}
   }
 ```
-# Currently the proof method is not working ): this project is not complete.
+## Currently the proof method is not working ): this project is not complete.
